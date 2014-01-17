@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
 from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -37,7 +40,7 @@ def generic_setter_compiler(var_name, name, node_class, parser, token):
     For calls like {% set_this_value "My Value" %}
     """
     bits = token.split_contents()
-    if(len(bits) < 2):
+    if len(bits) < 2:
         message = "%s takes at least one argument" % name
         raise template.TemplateSyntaxError(message)
     return node_class(var_name, bits[1:])

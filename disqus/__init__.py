@@ -1,9 +1,18 @@
-import urllib
-import urllib2
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
+try:
+    from urllib import parse, request
+except:
+    import urllib as parse
+    import urllib2 as request
 
 from django.core.management.base import CommandError
-from django.utils import simplejson as json
-from django.conf import settings
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
+
 
 def call(method, data, post=False):
     """
@@ -14,12 +23,12 @@ def call(method, data, post=False):
     if post:
         # POST request
         url += "/"
-        data = urllib.urlencode(data)
+        data = parse.urlencode(data)
     else:
         # GET request
-        url += "?%s" % urllib.urlencode(data)
+        url += "?%s" % parse.urlencode(data)
         data = ''
-    res = json.load(urllib2.urlopen(url, data))
+    res = json.load(request.urlopen(url, data))
     if not res['succeeded']:
         raise CommandError("'%s' failed: %s\nData: %s" % (method, res['code'], data))
     return res['message']

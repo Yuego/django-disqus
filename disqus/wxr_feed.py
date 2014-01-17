@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
 import datetime
+import six
 
 from django import template
 from django.conf import settings
@@ -13,11 +17,11 @@ USE_SINGLE_SIGNON = getattr(settings, "DISQUS_USE_SINGLE_SIGNON", False)
 class WxrFeedType(feedgenerator.Rss201rev2Feed):
     def rss_attributes(self):
         return {
-            u"version": self._version,
-            u'xmlns:content': u"http://purl.org/rss/1.0/modules/content/",
-            u'xmlns:dsq': u"http://www.disqus.com/",
-            u'xmlns:dc': u"http://purl.org/dc/elements/1.1/",
-            u'xmlns:wp': u"http://wordpress.org/export/1.0/",
+            "version": self._version,
+            'xmlns:content': "http://purl.org/rss/1.0/modules/content/",
+            'xmlns:dsq': "http://www.disqus.com/",
+            'xmlns:dc': "http://purl.org/dc/elements/1.1/",
+            'xmlns:wp': "http://wordpress.org/export/1.0/",
         }
     
     def format_date(self, date):
@@ -62,9 +66,9 @@ class WxrFeedType(feedgenerator.Rss201rev2Feed):
     def add_item_elements(self, handler, item):
         if item['comments'] is None:
             return
-        handler.addQuickElement(u"title", item['title'])
-        handler.addQuickElement(u"link", item['link'])
-        handler.addQuickElement(u"content:encoded", item['description'])
+        handler.addQuickElement("title", item['title'])
+        handler.addQuickElement("link", item['link'])
+        handler.addQuickElement("content:encoded", item['description'])
         handler.addQuickElement(u'dsq:thread_identifier', item['unique_id'])
         handler.addQuickElement(u'wp:post_date_gmt', 
             self.format_date(item['pubdate']).decode('utf-8'))
@@ -73,27 +77,27 @@ class WxrFeedType(feedgenerator.Rss201rev2Feed):
         
     def add_comment_elements(self, handler, comment):
         if USE_SINGLE_SIGNON:
-            handler.startElement(u"dsq:remote", {})
-            handler.addQuickElement(u"dsq:id", comment['user_id'])
-            handler.addQuickElement(u"dsq:avatar", comment['avatar'])
-            handler.endElement(u"dsq:remote")
-        handler.addQuickElement(u"wp:comment_id", comment['id'])
-        handler.addQuickElement(u"wp:comment_author", comment['user_name'])
-        handler.addQuickElement(u"wp:comment_author_email", comment['user_email'])
-        handler.addQuickElement(u"wp:comment_author_url", comment['user_url'])
-        handler.addQuickElement(u"wp:comment_author_IP", comment['ip_address'])
-        handler.addQuickElement(u"wp:comment_date_gmt", 
+            handler.startElement("dsq:remote", {})
+            handler.addQuickElement("dsq:id", comment['user_id'])
+            handler.addQuickElement("dsq:avatar", comment['avatar'])
+            handler.endElement("dsq:remote")
+        handler.addQuickElement("wp:comment_id", comment['id'])
+        handler.addQuickElement("wp:comment_author", comment['user_name'])
+        handler.addQuickElement("wp:comment_author_email", comment['user_email'])
+        handler.addQuickElement("wp:comment_author_url", comment['user_url'])
+        handler.addQuickElement("wp:comment_author_IP", comment['ip_address'])
+        handler.addQuickElement("wp:comment_date_gmt", 
             self.format_date(comment['submit_date']).decode('utf-8'))
-        handler.addQuickElement(u"wp:comment_content", comment['comment'])
-        handler.addQuickElement(u"wp:comment_approved", comment['is_approved'])
+        handler.addQuickElement("wp:comment_content", comment['comment'])
+        handler.addQuickElement("wp:comment_approved", comment['is_approved'])
         if comment['parent'] is not None:
-            handler.addQuickElement(u"wp:comment_parent", comment['parent'])
+            handler.addQuickElement("wp:comment_parent", comment['parent'])
     
     def write_comments(self, handler, comments):
         for comment in comments:
-            handler.startElement(u"wp:comment", {})
+            handler.startElement("wp:comment", {})
             self.add_comment_elements(handler, comment)
-            handler.endElement(u"wp:comment")
+            handler.endElement("wp:comment")
 
 
 class BaseWxrFeed(Feed):
@@ -167,15 +171,15 @@ class BaseWxrFeed(Feed):
             output.append({
                 'user_id': self._Feed__get_dynamic_attr('comment_user_id', comment),
                 'avatar': self._Feed__get_dynamic_attr('comment_avatar', comment),
-                'id': str(self._Feed__get_dynamic_attr('comment_id', comment)),
+                'id': six.text_type(self._Feed__get_dynamic_attr('comment_id', comment)),
                 'user_name': self._Feed__get_dynamic_attr('comment_user_name', comment),
                 'user_email': self._Feed__get_dynamic_attr('comment_user_email', comment),
                 'user_url': self._Feed__get_dynamic_attr('comment_user_url', comment),
                 'ip_address': self._Feed__get_dynamic_attr('comment_ip_address', comment),
                 'submit_date': self._Feed__get_dynamic_attr('comment_submit_date', comment),
                 'comment': self._Feed__get_dynamic_attr('comment_comment', comment),
-                'is_approved': str(self._Feed__get_dynamic_attr('comment_is_approved', comment)),
-                'parent': str(self._Feed__get_dynamic_attr('comment_parent', comment)),
+                'is_approved': six.text_type(self._Feed__get_dynamic_attr('comment_is_approved', comment)),
+                'parent': six.text_type(self._Feed__get_dynamic_attr('comment_parent', comment)),
             })
         return output
         
@@ -221,4 +225,3 @@ class ContribCommentsWxrFeed(BaseWxrFeed):
         return int(comment.is_public)
     
     comment_parent = 0
-    

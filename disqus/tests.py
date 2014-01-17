@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
 from django.conf import settings
 from django.core.management.base import CommandError
 
@@ -10,9 +13,9 @@ and parameters that were passed are set correctly.
 
 >>> c = DisqusClient(foo='bar', bar='foo')
 >>> c.foo
-'bar'
+u'bar'
 >>> c.bar
-'foo'
+u'foo'
 >>> c.baz
 Traceback (most recent call last):
     ...
@@ -21,8 +24,8 @@ AttributeError
 
 When a DISQUS API method is called, the call method should be used.
 
->>> c.get_forum_list
-<function call_method at ...>
+>>> 'call_method' in repr(c.get_forum_list)
+True
 """,
 }
 

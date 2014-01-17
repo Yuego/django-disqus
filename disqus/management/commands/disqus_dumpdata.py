@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
 from optparse import make_option
 
 from django.core.management.base import NoArgsCommand, CommandError
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 from disqus.api import DisqusClient
 
@@ -9,11 +15,11 @@ from disqus.api import DisqusClient
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
         make_option('--indent', default=None, dest='indent', type='int',
-            help='Specifies the indent level to use when pretty-printing output'),
+                    help='Specifies the indent level to use when pretty-printing output'),
         make_option('--filter', default='', dest='filter', type='str',
-            help='Type of entries that should be returned'),
+                    help='Type of entries that should be returned'),
         make_option('--exclude', default='', dest='exclude', type='str',
-            help='Type of entries that should be excluded from the response'),
+                    help='Type of entries that should be excluded from the response'),
     )
     help = 'Output DISQUS data in JSON format'
     requires_model_validation = False
@@ -54,4 +60,4 @@ class Command(NoArgsCommand):
             else:
                 start += step
                 posts.append(new_posts)
-        print json.dumps(posts, indent=indent)
+        print(json.dumps(posts, indent=indent))

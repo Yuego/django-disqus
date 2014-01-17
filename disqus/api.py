@@ -1,17 +1,25 @@
-from urllib import urlencode
-import urllib2
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
+try:
+    from urllib import parse, request as req
+except ImportError:
+    import urllib as parse
+    import urllib2 as req
 
 from django.utils import simplejson as json
 
 # A custom ProxyHandler for the urllib2 module that will not
 # auto-detect proxy settings
-proxy_support = urllib2.ProxyHandler({})
-opener = urllib2.build_opener(proxy_support)
-urllib2.install_opener(opener)
+proxy_support = req.ProxyHandler({})
+opener = req.build_opener(proxy_support)
+req.install_opener(opener)
+
 
 class DisqusException(Exception):
     """Exception raised for errors with the DISQUS API."""
     pass
+
 
 class DisqusClient(object):
     """
@@ -61,10 +69,10 @@ class DisqusClient(object):
         """
         if request_method == 'GET':
             if params:
-                request_url += '&%s' % urlencode(params)
-            request = urllib2.Request(request_url)
+                request_url += '&%s' % parse.urlencode(params)
+            request = req.Request(request_url)
         elif request_method == 'POST':
-            request = urllib2.Request(request_url, urlencode(params,doseq=1))
+            request = req.Request(request_url, parse.urlencode(params, doseq=1))
         return request
 
     def call(self, method, **params):
@@ -76,8 +84,8 @@ class DisqusClient(object):
         url = self.api_url % method
         request = self._get_request(url, self.METHODS[method], **params)
         try:
-            response = urllib2.urlopen(request)
-        except urllib2.URLError, e:
+            response = req.urlopen(request)
+        except req.URLError as e:
             raise
         else:
             response_json = json.loads(response.read())
